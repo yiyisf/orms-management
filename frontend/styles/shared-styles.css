@@ -16,3 +16,7 @@
   padding: 16px;
 }
 
+.form-border {
+  border: 1px solid var(--lumo-primary-color-10pct);
+}
+

@@ -1,12 +1,16 @@
 package com.srvbot.forms;
 
+import com.srvbot.forms.component.AddDialog;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
@@ -36,20 +40,46 @@ import java.util.Locale;
 @CssImport("./styles/shared-styles.css")
 @CssImport(value = "./styles/vaadin-text-field-styles.css", themeFor = "vaadin-text-field")
 public class MainView extends VerticalLayout {
+    private FormLayout formLayout;
+
+    private final AddDialog addDialog;
 
     /**
      * Construct a new Vaadin view.
      * <p>
      * Build the initial UI state for the user accessing the application.
-     *
+     * @param addDialog
      */
-    public MainView() {
+    public MainView(AddDialog addDialog) {
+        this.addDialog = addDialog;
         setSizeFull();
-        setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+
+        setDefaultHorizontalComponentAlignment(Alignment.START);
 //        setMargin(false);
 //        setPadding(false);
 //        add(new Header("Header forms"));
-        add(initForm(initTextfield("XX", "t1"), initTextfield("YY", "t2"), initTextfield("ZZ", "t3"), initTextfield("AAA", "t4")));
+        add(addBtn());
+        formLayout = new FormLayout();
+        formLayout.getElement().getStyle()
+                .set("border", "2px solid grey")
+                .set("padding", "1em");
+//        formLayout.setMinHeight("30em");
+
+        add(formLayout);
+//        expand(formLayout);
+//        add(initForm(initTextfield("XX", "t1"), initTextfield("YY", "t2"), initTextfield("ZZ", "t3"), initTextfield("AAA", "t4")));
+    }
+
+    private Button addBtn() {
+        Button addBtn = new Button("New");
+        addBtn.setIcon(new Icon(VaadinIcon.PLUS));
+        addBtn.addClickListener(event -> addElement());
+        return addBtn;
+    }
+
+    private void addElement() {
+//        formLayout.add(initTextfield("xx", "id1"));
+        this.addDialog.open();
     }
 
     private Component initForm(Component... components) {
