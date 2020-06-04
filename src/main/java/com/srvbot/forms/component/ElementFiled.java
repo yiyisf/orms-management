@@ -4,7 +4,7 @@ public class ElementFiled {
     private String label;
     private String id;
     private CustomerFiled type;
-    private Integer weight;
+    private Integer weight = 2;
 
     public ElementFiled() {
     }

@@ -9,11 +9,15 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.binder.ValidationResult;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 
 @Component
-public class AddDialog extends Dialog {
+public class EditForm extends FormLayout {
 
     private TextField label = new TextField("标签");
     private TextField id = new TextField("ID");
@@ -22,7 +26,10 @@ public class AddDialog extends Dialog {
     private final FormLayout formLayout;
     private Binder<ElementFiled> binder = new Binder<>(ElementFiled.class);
 
-    public AddDialog() {
+    private ElementFiled elementFiled;
+
+    public EditForm() {
+        this.elementFiled = new ElementFiled();
         label.setPlaceholder("请输入标签！");
         label.setRequired(true);
         label.setRequiredIndicatorVisible(true);
@@ -35,6 +42,7 @@ public class AddDialog extends Dialog {
         weight.setItems(1,2,3);
         weight.setLabel("比重：");
         weight.setRequiredIndicatorVisible(true);
+//        weight.setValue(1);
 
         formLayout = new FormLayout();
         formLayout.add(label, id, type, weight);
@@ -45,17 +53,25 @@ public class AddDialog extends Dialog {
         HorizontalLayout buttons = new HorizontalLayout(save, button);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         button.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-        formLayout.add(buttons);
-        binder.bindInstanceFields(this);
+        binder.bind(label, ElementFiled::getLabel, ElementFiled::setLabel);
+
+        binder.bind(id, ElementFiled::getId, ElementFiled::setId);
+
+        binder.bind(type, ElementFiled::getType, ElementFiled::setType);
+
+        binder.bind(weight, ElementFiled::getWeight, ElementFiled::setWeight);
+
+        binder.setBean(this.elementFiled);
 //        formLayout.add(save);
 //        formLayout.add(button);
 
+        formLayout.add(buttons);
         add(formLayout);
     }
 
     private Button cancelBtn() {
         Button cancelBtn = new Button("取消");
-        cancelBtn.addClickListener( e -> this.close());
+//        cancelBtn.addClickListener( e -> this.close());
 
         return cancelBtn;
     }
@@ -63,7 +79,13 @@ public class AddDialog extends Dialog {
     private Button confirmBtn() {
         Button btn = new Button("确定");
         btn.addClickListener( e -> {
-            System.out.println(this.binder.getBean());
+            if (binder.validate().isOk()) {
+                System.out.println("validate OK!");
+            } else {
+                List<ValidationResult> errors = binder.validate().getValidationErrors();
+                System.out.println(errors);
+            }
+            System.out.println(this.elementFiled);
         });
         return btn;
     }
@@ -79,5 +101,13 @@ public class AddDialog extends Dialog {
 
     public FormLayout getFormLayout() {
         return formLayout;
+    }
+
+    public ElementFiled getElementFiled() {
+        return elementFiled;
+    }
+
+    public void setElementFiled(ElementFiled elementFiled) {
+        this.elementFiled = elementFiled;
     }
 }

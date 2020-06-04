@@ -1,12 +1,13 @@
 package com.srvbot.forms;
 
-import com.srvbot.forms.component.AddDialog;
+import com.srvbot.forms.component.EditForm;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.icon.Icon;
@@ -42,16 +43,19 @@ import java.util.Locale;
 public class MainView extends VerticalLayout {
     private FormLayout formLayout;
 
-    private final AddDialog addDialog;
+    private final EditForm editForm;
+
+    private final Dialog dialog;
 
     /**
      * Construct a new Vaadin view.
      * <p>
      * Build the initial UI state for the user accessing the application.
-     * @param addDialog
+     * @param editForm
      */
-    public MainView(AddDialog addDialog) {
-        this.addDialog = addDialog;
+    public MainView(EditForm editForm) {
+        this.editForm = editForm;
+        this.dialog = new Dialog();
         setSizeFull();
 
         setDefaultHorizontalComponentAlignment(Alignment.START);
@@ -79,7 +83,8 @@ public class MainView extends VerticalLayout {
 
     private void addElement() {
 //        formLayout.add(initTextfield("xx", "id1"));
-        this.addDialog.open();
+        this.dialog.add(this.editForm);
+        this.dialog.open();
     }
 
     private Component initForm(Component... components) {
