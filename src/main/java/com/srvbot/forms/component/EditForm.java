@@ -12,9 +12,10 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationResult;
-import org.springframework.stereotype.Component;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 
 @Tag("srvbot-form")
@@ -40,8 +41,9 @@ public class EditForm extends FormLayout {
         type.setPlaceholder("请选择类型!");
         type.setRequired(true);
         type.setItems(CustomerFiled.HOST, CustomerFiled.NUMBER, CustomerFiled.SELECT, CustomerFiled.TEXT, CustomerFiled.SUB_SYS_TEM);
+        type.setValue(CustomerFiled.TEXT);
         type.setRequiredIndicatorVisible(true);
-        weight.setItems(1,2,3);
+        weight.setItems(1, 2, 3);
         weight.setLabel("比重：");
         weight.setRequiredIndicatorVisible(true);
 //        weight.setValue(1);
@@ -57,11 +59,17 @@ public class EditForm extends FormLayout {
         HorizontalLayout buttons = new HorizontalLayout(save, button);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         button.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-        binder.bind(label, ElementFiled::getLabel, ElementFiled::setLabel).validate(true);
+        binder.forField(label)
+                .withValidator(StringUtils::isNotEmpty, "请输入字段标签!")
+                .bind(ElementFiled::getLabel, ElementFiled::setLabel);
 
-        binder.bind(id, ElementFiled::getId, ElementFiled::setId);
+        binder.forField(id)
+                .withValidator(StringUtils::isNotEmpty, "请输入唯一id!")
+                .bind(ElementFiled::getId, ElementFiled::setId);
 
-        binder.bind(type, ElementFiled::getType, ElementFiled::setType);
+        binder.forField(type)
+                .withValidator(Objects::nonNull, "请选择组件类型!")
+                .bind(ElementFiled::getType, ElementFiled::setType);
 
         binder.bind(weight, ElementFiled::getWeight, ElementFiled::setWeight);
 
@@ -75,10 +83,10 @@ public class EditForm extends FormLayout {
 
     private Button cancelBtn() {
         Button cancelBtn = new Button("取消");
-        cancelBtn.addClickListener( e -> {
+        cancelBtn.addClickListener(e -> {
             getParent().ifPresent(p -> {
                 if (p instanceof Dialog) {
-                    ((Dialog)p).close();
+                    ((Dialog) p).close();
                 }
             });
         });
@@ -88,12 +96,12 @@ public class EditForm extends FormLayout {
 
     private Button confirmBtn() {
         Button btn = new Button("确定");
-        btn.addClickListener( e -> {
+        btn.addClickListener(e -> {
             if (binder.validate().isOk()) {
                 System.out.println("validate OK!");
                 getParent().ifPresent(p -> {
                     if (p instanceof Dialog) {
-                        ((Dialog)p).close();
+                        ((Dialog) p).close();
                     }
                 });
             } else {
