@@ -51,17 +51,13 @@ public class MainView extends VerticalLayout {
      * Construct a new Vaadin view.
      * <p>
      * Build the initial UI state for the user accessing the application.
-     * @param editForm
      */
-    public MainView(EditForm editForm) {
-        this.editForm = editForm;
+    public MainView() {
+        this.editForm = new EditForm();
         this.dialog = new Dialog();
         setSizeFull();
 
         setDefaultHorizontalComponentAlignment(Alignment.START);
-//        setMargin(false);
-//        setPadding(false);
-//        add(new Header("Header forms"));
         add(addBtn());
         formLayout = new FormLayout();
         formLayout.getElement().getStyle()

@@ -1,22 +1,23 @@
 package com.srvbot.forms.component;
 
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.binder.ValidationResult;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 
-@Component
+@Tag("srvbot-form")
 public class EditForm extends FormLayout {
 
     private TextField label = new TextField("标签");
@@ -38,6 +39,7 @@ public class EditForm extends FormLayout {
         id.setRequiredIndicatorVisible(true);
         type.setPlaceholder("请选择类型!");
         type.setRequired(true);
+        type.setItems(CustomerFiled.HOST, CustomerFiled.NUMBER, CustomerFiled.SELECT, CustomerFiled.TEXT, CustomerFiled.SUB_SYS_TEM);
         type.setRequiredIndicatorVisible(true);
         weight.setItems(1,2,3);
         weight.setLabel("比重：");
@@ -46,6 +48,8 @@ public class EditForm extends FormLayout {
 
         formLayout = new FormLayout();
         formLayout.add(label, id, type, weight);
+
+        formLayout.add(new RichTextEditor());
 //        formLayout.add(initTextfield("Label", "label"), initTextfield("提示语", "placeholder"), initTextfield("是否必输项","requeried"));
 //        formLayout.add();
         Button save = confirmBtn();
@@ -53,7 +57,7 @@ public class EditForm extends FormLayout {
         HorizontalLayout buttons = new HorizontalLayout(save, button);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         button.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-        binder.bind(label, ElementFiled::getLabel, ElementFiled::setLabel);
+        binder.bind(label, ElementFiled::getLabel, ElementFiled::setLabel).validate(true);
 
         binder.bind(id, ElementFiled::getId, ElementFiled::setId);
 
@@ -71,7 +75,13 @@ public class EditForm extends FormLayout {
 
     private Button cancelBtn() {
         Button cancelBtn = new Button("取消");
-//        cancelBtn.addClickListener( e -> this.close());
+        cancelBtn.addClickListener( e -> {
+            getParent().ifPresent(p -> {
+                if (p instanceof Dialog) {
+                    ((Dialog)p).close();
+                }
+            });
+        });
 
         return cancelBtn;
     }
@@ -81,6 +91,11 @@ public class EditForm extends FormLayout {
         btn.addClickListener( e -> {
             if (binder.validate().isOk()) {
                 System.out.println("validate OK!");
+                getParent().ifPresent(p -> {
+                    if (p instanceof Dialog) {
+                        ((Dialog)p).close();
+                    }
+                });
             } else {
                 List<ValidationResult> errors = binder.validate().getValidationErrors();
                 System.out.println(errors);
