@@ -2,6 +2,8 @@ package com.srvbot.forms.layout;
 
 import com.srvbot.forms.component.MessageList;
 import com.srvbot.forms.domain.ChatMessage;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
@@ -9,6 +11,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -99,15 +102,41 @@ public class ChatLayout extends VerticalLayout {
 
 
         HorizontalLayout layout = new HorizontalLayout(message, send);
+        layout.setWidthFull();
         layout.setAlignItems(Alignment.START);
         layout.expand(message);
-        layout.setWidth("50%");
         add(messageList, layout);
         expand(messageList);
         messages.subscribe(chatMessage -> {
             getUI().ifPresent(ui -> {
-                ui.access(() -> messageList.add(new Div(new Text(chatMessage.getFrom() + ":" + chatMessage.getMessage()))));
+                ui.access(() -> messageList.add(initMessageItem(chatMessage)));
             });
         });
+    }
+
+    private Component initMessageItem(ChatMessage chatMessage) {
+        String showName = StringUtils.substring(chatMessage.getFrom(), -2).toUpperCase();
+        Span fromContainer = new Span(new Text(showName));
+
+        fromContainer.addClassName(getClass().getSimpleName() + "-name");
+
+        Div textContainer = new Div(new Html("<span>" + chatMessage.getMessage() + "</span>"));
+        textContainer.addClassName(getClass().getSimpleName() + "-bubble");
+
+//        Div avatarContainer = new Div(avatar, fromContainer);
+        fromContainer.addClassName(getClass().getSimpleName() + "-avatar");
+
+        Div line = new Div(fromContainer, textContainer);
+        line.addClassName(getClass().getSimpleName() + "-row");
+        if (StringUtils.equals(userName, chatMessage.getFrom())) {
+            line.addClassName(getClass().getSimpleName() + "-row-currentUser");
+            textContainer.addClassName(getClass().getSimpleName() + "-bubble-currentUser");
+        } else {
+            line.addClassName(getClass().getSimpleName() + "-row-otherUser");
+            textContainer.addClassName(getClass().getSimpleName() + "-bubble-otherUser");
+        }
+        line.addClassName(getClass().getSimpleName() + "-line");
+
+        return line;
     }
 }
