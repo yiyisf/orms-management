@@ -16,7 +16,20 @@
   padding: 16px;
 }
 
-.form-border {
-  border: 1px solid var(--lumo-primary-color-10pct);
+.form-content vaadin-horizontal-layout{
+  margin: 0;
+  width: 50%;
+}
+
+.messageList {
+  overflow-y: scroll;
+  padding: 16px;
+  width: 50%;
+  height: 100%;
+}
+
+.messageList h1{
+  padding: 16px;
+  width: 50%;
 }
 

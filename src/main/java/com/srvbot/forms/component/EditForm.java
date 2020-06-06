@@ -6,9 +6,12 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationResult;
@@ -31,6 +34,7 @@ public class EditForm extends FormLayout {
     private ElementFiled elementFiled;
 
     public EditForm() {
+//        addClassName("form-content");
         this.elementFiled = new ElementFiled();
         label.setPlaceholder("请输入标签！");
         label.setRequired(true);
@@ -50,10 +54,17 @@ public class EditForm extends FormLayout {
 
         formLayout = new FormLayout();
         formLayout.add(label, id, type, weight);
-
+        //test
         formLayout.add(new RichTextEditor());
-//        formLayout.add(initTextfield("Label", "label"), initTextfield("提示语", "placeholder"), initTextfield("是否必输项","requeried"));
-//        formLayout.add();
+        NumberField numberField = new NumberField("数字:");
+        numberField.setMin(0);
+        numberField.setMax(100);
+        numberField.setStep(2);
+        numberField.setId("number");
+        numberField.setHasControls(true);
+        numberField.setPrefixComponent(new Icon(VaadinIcon.DOLLAR));
+        formLayout.add(numberField);
+
         Button save = confirmBtn();
         Button button = cancelBtn();
         HorizontalLayout buttons = new HorizontalLayout(save, button);

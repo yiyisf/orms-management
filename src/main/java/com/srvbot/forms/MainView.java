@@ -55,6 +55,7 @@ public class MainView extends VerticalLayout {
     public MainView() {
         this.editForm = new EditForm();
         this.dialog = new Dialog();
+        this.dialog.setWidth("50%");
         setSizeFull();
 
         setDefaultHorizontalComponentAlignment(Alignment.START);
