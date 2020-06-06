@@ -2,10 +2,7 @@ package com.srvbot.forms.layout;
 
 import com.srvbot.forms.component.MessageList;
 import com.srvbot.forms.domain.ChatMessage;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Html;
-import com.vaadin.flow.component.Key;
-import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -16,6 +13,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Push;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import org.apache.commons.lang3.StringUtils;
@@ -40,13 +38,14 @@ public class ChatLayout extends VerticalLayout {
         this.publisher = publisher;
         this.messages = messages;
         setSizeFull();
+        setPadding(true);
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         getElement().getThemeList().add("dark");
         addClassName("messageList");
 
-        H1 chat = new H1("Chat For xx");
-        chat.getElement().getThemeList().add("dark");
-        add(chat);
+//        H1 chat = new H1("Chat For xx");
+//        chat.getElement().getThemeList().add("dark");
+//        add(chat);
         //
         askUserName();
     }
@@ -82,7 +81,8 @@ public class ChatLayout extends VerticalLayout {
             this.messageList = new MessageList();
         }
 
-        TextField message = new TextField();
+        TextArea message = new TextArea();
+        message.setMaxLength(300);
 
         Button send = new Button("发送", VaadinIcon.ENTER.create(), event -> {
             String text = message.getValue();
@@ -91,13 +91,25 @@ public class ChatLayout extends VerticalLayout {
                 publisher.onNext(new ChatMessage(userName, text));
 //                messageList.addMessage(userName, text);
             } else {
-                message.setInvalid(true);
+                message.setInvalid(false);
             }
             message.focus();
         });
         message.focus();
+        message.addKeyPressListener(Key.ENTER, event -> {
+            System.out.println("handle ctrl + enter; value is :" + message.getValue());
+            send.click();
+        }, KeyModifier.CONTROL);
 
-        send.addClickShortcut(Key.ENTER);
+        message.addValueChangeListener(event -> {
+            System.out.println("value changed :" + event.getValue());
+        });
+
+
+        message.addValueChangeListener(AbstractField.ComponentValueChangeEvent::getValue);
+
+
+        send.addClickShortcut(Key.ENTER, KeyModifier.CONTROL);
         send.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
 
@@ -120,7 +132,8 @@ public class ChatLayout extends VerticalLayout {
 
         fromContainer.addClassName(getClass().getSimpleName() + "-name");
 
-        Div textContainer = new Div(new Html("<span>" + chatMessage.getMessage() + "</span>"));
+        Div textContainer = new Div(new Html("<div>" + chatMessage.getMessage().replaceAll("\n", "<br/>") + "</div>"));
+//        Div textContainer = new Div(new Text(chatMessage.getMessage().replaceAll("\n", "<br/>")));
         textContainer.addClassName(getClass().getSimpleName() + "-bubble");
 
 //        Div avatarContainer = new Div(avatar, fromContainer);
