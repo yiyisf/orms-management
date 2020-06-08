@@ -2,10 +2,7 @@ package com.srvbot.forms;
 
 import com.srvbot.forms.component.EditForm;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -19,7 +16,6 @@ import com.vaadin.flow.server.PWA;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * A sample Vaadin view class.
@@ -53,21 +49,22 @@ public class MainView extends VerticalLayout {
      * Build the initial UI state for the user accessing the application.
      */
     public MainView() {
-        this.editForm = new EditForm();
+        this.editForm = new EditForm(this);
         this.dialog = new Dialog();
-        this.dialog.setWidth("50%");
+//        this.dialog.setWidth("50%");
+
         setSizeFull();
 
         setDefaultHorizontalComponentAlignment(Alignment.START);
         add(addBtn());
-        formLayout = new FormLayout();
+        formLayout = initForm();
         formLayout.getElement().getStyle()
-                .set("border", "2px solid grey")
+                .set("border", "1px solid grey")
                 .set("padding", "1em");
 //        formLayout.setMinHeight("30em");
 
         add(formLayout);
-//        expand(formLayout);
+        expand(formLayout);
 //        add(initForm(initTextfield("XX", "t1"), initTextfield("YY", "t2"), initTextfield("ZZ", "t3"), initTextfield("AAA", "t4")));
     }
 
@@ -84,46 +81,54 @@ public class MainView extends VerticalLayout {
         this.dialog.open();
     }
 
-    private Component initForm(Component... components) {
-        FormLayout formLayout = new FormLayout();
+    private FormLayout initForm() {
+        FormLayout form = new FormLayout();
         List<FormLayout.ResponsiveStep> list = new ArrayList<>();
         list.add(new FormLayout.ResponsiveStep("25em", 1));
         list.add(new FormLayout.ResponsiveStep("32em", 2));
         list.add(new FormLayout.ResponsiveStep("45em", 3));
         list.add(new FormLayout.ResponsiveStep("60em", 4));
-        formLayout.setResponsiveSteps(list);
-        formLayout.getElement().getThemeList().add("padding ");
+        form.setResponsiveSteps(list);
+        form.getElement().getThemeList().add("padding ");
+        return form;
+    }
 
-        for (Component component : components) {
-            formLayout.add(component);
-        }
+    public void initForm(Component component, int colspan) {
+//        FormLayout formLayout = new FormLayout();
+//        List<FormLayout.ResponsiveStep> list = new ArrayList<>();
+//        list.add(new FormLayout.ResponsiveStep("25em", 1));
+//        list.add(new FormLayout.ResponsiveStep("32em", 2));
+//        list.add(new FormLayout.ResponsiveStep("45em", 3));
+//        list.add(new FormLayout.ResponsiveStep("60em", 4));
+//        formLayout.setResponsiveSteps(list);
+//        formLayout.getElement().getThemeList().add("padding ");
 
-        DatePicker datePicker = new DatePicker();
-        datePicker.setLocale(Locale.CHINESE);
-        datePicker.setClearButtonVisible(true);
-        datePicker.setLabel("日期");
-        datePicker.setRequired(true);
-        datePicker.setId("date1");
-        datePicker.setRequiredIndicatorVisible(true);
+        formLayout.add(component, colspan);
 
-        formLayout.add(datePicker, 2);
-        formLayout.add(new VerticalLayout(), 2);
-        //
-        ComboBox<String> comboBox = new ComboBox<>("combox");
-        comboBox.setItems("xx", "yy", "zz");
-        comboBox.setRequired(true);
-        comboBox.setRequiredIndicatorVisible(true);
-        comboBox.setId("combox");
-        formLayout.add(comboBox);
+//        DatePicker datePicker = new DatePicker();
+//        datePicker.setLocale(Locale.CHINESE);
+//        datePicker.setClearButtonVisible(true);
+//        datePicker.setLabel("日期");
+//        datePicker.setRequired(true);
+//        datePicker.setId("date1");
+//        datePicker.setRequiredIndicatorVisible(true);
+//
+//        formLayout.add(datePicker, 2);
+//        formLayout.add(new VerticalLayout(), 2);
+//        //
+//        ComboBox<String> comboBox = new ComboBox<>("combox");
+//        comboBox.setItems("xx", "yy", "zz");
+//        comboBox.setRequired(true);
+//        comboBox.setRequiredIndicatorVisible(true);
+//        comboBox.setId("combox");
+//        formLayout.add(comboBox);
+//
+//        comboBox.addValueChangeListener(event -> {
+//            System.out.println("value changed");
+//            UI.getCurrent().getPage()
+//                    .executeJs("console.log ('combox select value is :' + $0)", comboBox.getValue());
+//        });
 
-        comboBox.addValueChangeListener(event -> {
-            System.out.println("value changed");
-            UI.getCurrent().getPage()
-                    .executeJs("console.log ('combox select value is :' + $0)", comboBox.getValue());
-        });
-
-
-        return formLayout;
     }
 
     private TextField initTextfield(String label, String id) {

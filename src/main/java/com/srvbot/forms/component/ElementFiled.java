@@ -5,6 +5,7 @@ public class ElementFiled {
     private String id;
     private CustomerFiled type;
     private Integer weight = 2;
+    private String placeholder;
 
     public ElementFiled() {
     }
@@ -49,5 +50,13 @@ public class ElementFiled {
                 ", type=" + type +
                 ", weight=" + weight +
                 '}';
+    }
+
+    public String getPlaceholder() {
+        return placeholder;
+    }
+
+    public void setPlaceholder(String placeholder) {
+        this.placeholder = placeholder;
     }
 }

@@ -1,6 +1,9 @@
 package com.srvbot.forms.component;
 
+import com.srvbot.forms.MainView;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -31,9 +34,11 @@ public class EditForm extends FormLayout {
     private final FormLayout formLayout;
     private Binder<ElementFiled> binder = new Binder<>(ElementFiled.class);
 
+    private Component component;
+
     private ElementFiled elementFiled;
 
-    public EditForm() {
+    public EditForm(MainView mainView) {
 //        addClassName("form-content");
         this.elementFiled = new ElementFiled();
         label.setPlaceholder("请输入标签！");
@@ -44,7 +49,7 @@ public class EditForm extends FormLayout {
         id.setRequiredIndicatorVisible(true);
         type.setPlaceholder("请选择类型!");
         type.setRequired(true);
-        type.setItems(CustomerFiled.HOST, CustomerFiled.NUMBER, CustomerFiled.SELECT, CustomerFiled.TEXT, CustomerFiled.SUB_SYS_TEM);
+        type.setItems(CustomerFiled.HOST, CustomerFiled.NUMBER, CustomerFiled.SELECT, CustomerFiled.TEXT, CustomerFiled.SUB_SYS_TEM, CustomerFiled.UM);
         type.setValue(CustomerFiled.TEXT);
         type.setRequiredIndicatorVisible(true);
         weight.setItems(1, 2, 3);
@@ -55,7 +60,7 @@ public class EditForm extends FormLayout {
         formLayout = new FormLayout();
         formLayout.add(label, id, type, weight);
         //test
-        formLayout.add(new RichTextEditor());
+//        formLayout.add(new RichTextEditor());
         NumberField numberField = new NumberField("数字:");
         numberField.setMin(0);
         numberField.setMax(100);
@@ -65,7 +70,7 @@ public class EditForm extends FormLayout {
         numberField.setPrefixComponent(new Icon(VaadinIcon.DOLLAR));
         formLayout.add(numberField);
 
-        Button save = confirmBtn();
+        Button save = confirmBtn(mainView);
         Button button = cancelBtn();
         HorizontalLayout buttons = new HorizontalLayout(save, button);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -85,10 +90,8 @@ public class EditForm extends FormLayout {
         binder.bind(weight, ElementFiled::getWeight, ElementFiled::setWeight);
 
         binder.setBean(this.elementFiled);
-//        formLayout.add(save);
-//        formLayout.add(button);
 
-        formLayout.add(buttons);
+        formLayout.add(buttons, 2);
         add(formLayout);
     }
 
@@ -105,13 +108,16 @@ public class EditForm extends FormLayout {
         return cancelBtn;
     }
 
-    private Button confirmBtn() {
+    private Button confirmBtn(MainView mainView) {
         Button btn = new Button("确定");
         btn.addClickListener(e -> {
             if (binder.validate().isOk()) {
-                System.out.println("validate OK!");
+                System.out.println(this.elementFiled);
                 getParent().ifPresent(p -> {
                     if (p instanceof Dialog) {
+                        //init result component
+                        initComponent(this.elementFiled);
+                        mainView.initForm(this.component, this.elementFiled.getWeight());
                         ((Dialog) p).close();
                     }
                 });
@@ -122,6 +128,33 @@ public class EditForm extends FormLayout {
             System.out.println(this.elementFiled);
         });
         return btn;
+    }
+
+    private void initComponent(ElementFiled elementFiled) {
+        switch (elementFiled.getType()) {
+            case TEXT:
+                Text text = new Text(elementFiled.getLabel());
+                System.out.println("element id is :" + elementFiled.getId());
+//                text.setId(elementFiled.getId());
+                this.component = text;
+                break;
+            case UM:
+                TextField textField = new TextField(elementFiled.getLabel());
+                textField.setId(elementFiled.getId());
+                textField.setPlaceholder("");
+                textField.setMaxLength(150);
+                this.component = textField;
+                break;
+            case NUMBER:
+                break;
+            case HOST:
+                break;
+            case SELECT:
+                break;
+            case SUB_SYS_TEM:
+                break;
+        }
+
     }
 
     private TextField initTextfield(String label, String id) {
@@ -143,5 +176,13 @@ public class EditForm extends FormLayout {
 
     public void setElementFiled(ElementFiled elementFiled) {
         this.elementFiled = elementFiled;
+    }
+
+    public Component getComponent() {
+        return component;
+    }
+
+    public void setComponent(Component component) {
+        this.component = component;
     }
 }
