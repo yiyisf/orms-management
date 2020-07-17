@@ -6,5 +6,7 @@ public enum CustomerFiled {
     NUMBER,
     SUB_SYS_TEM,
     HOST,
-    UM
+    UM,
+    RADIO,
+    CHECK_BOX
 }

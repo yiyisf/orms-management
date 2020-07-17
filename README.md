@@ -70,3 +70,11 @@ Project follow the Maven's [standard directory layout structure](https://maven.a
 ## Notes
 
 If you run application from a command line, remember to prepend a `mvn` to the command.
+
+1.参考：https://certbot.eff.org/lets-encrypt/centosrhel7-other，安装certbot工具； 
+2.sudo certbot certonly --standalone，生成密钥 
+3.参考:https://maximilian-boehm.com/en-gb/blog/create-a-java-keystore-jks-from-lets-encrypt-certificates-1884000/,
+  只需关注后两步； 
+  openssl pkcs12 -export -in fullchain.pem -inkey privkey.pem -out pkcs.p12 -name NAME 
+  keytool -importkeystore -deststorepass PASSWORD_STORE -destkeypass PASSWORD_KEYPASS -destkeystore keystore.jks -srckeystore pkcs.p12 -srcstoretype PKCS12 -srcstorepass STORE_PASS -alias NAME 
+  4.增加定时任务更新密钥，避免证书过期. echo "0 0,12 * * * root python -c 'import random; import time; time.sleep(random.random() * 3600)' && certbot renew -q" | sudo tee -a /etc/crontab > /dev/null

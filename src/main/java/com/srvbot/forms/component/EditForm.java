@@ -1,9 +1,10 @@
 package com.srvbot.forms.component;
 
 import com.srvbot.forms.MainView;
+import com.srvbot.forms.component.formComponent.FormDiv;
+import com.srvbot.forms.component.formComponent.FormText;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -12,7 +13,6 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.richtexteditor.RichTextEditor;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -47,12 +47,17 @@ public class EditForm extends FormLayout {
         id.setPlaceholder("请输入唯一的id!");
         id.setRequired(true);
         id.setRequiredIndicatorVisible(true);
+        id.addValueChangeListener(event -> {
+
+        });
         type.setPlaceholder("请选择类型!");
         type.setRequired(true);
-        type.setItems(CustomerFiled.HOST, CustomerFiled.NUMBER, CustomerFiled.SELECT, CustomerFiled.TEXT, CustomerFiled.SUB_SYS_TEM, CustomerFiled.UM);
+//        type.setItems(CustomerFiled.HOST, CustomerFiled.NUMBER, CustomerFiled.SELECT, CustomerFiled.TEXT, CustomerFiled.SUB_SYS_TEM, CustomerFiled.UM);
+        type.setItems(CustomerFiled.values());
+
         type.setValue(CustomerFiled.TEXT);
         type.setRequiredIndicatorVisible(true);
-        weight.setItems(1, 2, 3);
+        weight.setItems(1, 2, 3, 4);
         weight.setLabel("比重：");
         weight.setRequiredIndicatorVisible(true);
 //        weight.setValue(1);
@@ -112,11 +117,13 @@ public class EditForm extends FormLayout {
         Button btn = new Button("确定");
         btn.addClickListener(e -> {
             if (binder.validate().isOk()) {
-                System.out.println(this.elementFiled);
+                System.out.println(this.binder.getBean());
                 getParent().ifPresent(p -> {
                     if (p instanceof Dialog) {
+                        System.out.println("form json is:" + this.binder.getBean());
                         //init result component
-                        initComponent(this.elementFiled);
+                        this.component = new FormDiv(this.binder.getBean(), true);
+//                        initComponent(this.binder.getBean(), true);
                         mainView.initForm(this.component, this.elementFiled.getWeight());
                         ((Dialog) p).close();
                     }
@@ -130,32 +137,45 @@ public class EditForm extends FormLayout {
         return btn;
     }
 
-    private void initComponent(ElementFiled elementFiled) {
-        switch (elementFiled.getType()) {
-            case TEXT:
-                Text text = new Text(elementFiled.getLabel());
-                System.out.println("element id is :" + elementFiled.getId());
-//                text.setId(elementFiled.getId());
-                this.component = text;
-                break;
-            case UM:
-                TextField textField = new TextField(elementFiled.getLabel());
-                textField.setId(elementFiled.getId());
-                textField.setPlaceholder("");
-                textField.setMaxLength(150);
-                this.component = textField;
-                break;
-            case NUMBER:
-                break;
-            case HOST:
-                break;
-            case SELECT:
-                break;
-            case SUB_SYS_TEM:
-                break;
-        }
-
-    }
+//    private void initComponent(ElementFiled elementFiled, boolean isEdit) {
+//        switch (elementFiled.getType()) {
+//            case TEXT:
+//                FormText text = new FormText(binder.getBean().getLabel());
+//                System.out.println("element id is :" + elementFiled.getId());
+//                this.component = new FormDiv(text, isEdit);
+//                break;
+//            case UM:
+//                TextField textField = new TextField(binder.getBean().getLabel());
+//                textField.setId(elementFiled.getId());
+//                textField.setPlaceholder("");
+//                textField.setMaxLength(150);
+//                this.component = new FormDiv(textField, isEdit);
+//                break;
+//            case NUMBER:
+//                NumberField num = new NumberField();
+//                num.setLabel(binder.getBean().getLabel());
+//                this.component = new FormDiv(num, isEdit);
+//                break;
+//            case HOST:
+//                ComboBox<String> hostComBox = new ComboBox<>();
+//                hostComBox.setLabel(binder.getBean().getLabel());
+//                hostComBox.setItems("host1", "host2", "host3");
+//                this.component = new FormDiv(hostComBox, isEdit);
+//                break;
+//            case SELECT:
+//                Select<String> select = new Select<>();
+//                select.setLabel(binder.getBean().getLabel());
+//                this.component = new FormDiv(select, isEdit);
+//                break;
+//            case SUB_SYS_TEM:
+//                ComboBox<String> subSysComBox = new ComboBox<>();
+//                subSysComBox.setLabel(binder.getBean().getLabel());
+//                subSysComBox.setItems("sys1", "sys2", "sys3");
+//                this.component = new FormDiv(subSysComBox, isEdit);
+//                break;
+//        }
+//
+//    }
 
     private TextField initTextfield(String label, String id) {
         TextField field = new TextField();
@@ -184,5 +204,13 @@ public class EditForm extends FormLayout {
 
     public void setComponent(Component component) {
         this.component = component;
+    }
+
+    public void clearField() {
+        this.binder.setBean(new ElementFiled());
+    }
+
+    public void setField(ElementFiled elementFiled) {
+        this.binder.setBean(elementFiled);
     }
 }

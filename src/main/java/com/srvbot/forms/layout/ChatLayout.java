@@ -37,7 +37,7 @@ public class ChatLayout extends VerticalLayout {
     public ChatLayout(UnicastProcessor<ChatMessage> publisher, Flux<ChatMessage> messages) {
         this.publisher = publisher;
         this.messages = messages;
-        setSizeFull();
+        setMaxWidth("40em");
         setPadding(true);
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         getElement().getThemeList().add("dark");

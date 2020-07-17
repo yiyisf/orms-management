@@ -1,6 +1,8 @@
 package com.srvbot.forms;
 
 import com.srvbot.forms.component.EditForm;
+import com.srvbot.forms.component.ElementFiled;
+import com.srvbot.forms.component.formComponent.FormDiv;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -16,6 +18,7 @@ import com.vaadin.flow.server.PWA;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A sample Vaadin view class.
@@ -37,7 +40,7 @@ import java.util.List;
 @CssImport("./styles/shared-styles.css")
 @CssImport(value = "./styles/vaadin-text-field-styles.css", themeFor = "vaadin-text-field")
 public class MainView extends VerticalLayout {
-    private FormLayout formLayout;
+    private final FormLayout formLayout;
 
     private final EditForm editForm;
 
@@ -49,6 +52,9 @@ public class MainView extends VerticalLayout {
      * Build the initial UI state for the user accessing the application.
      */
     public MainView() {
+
+//        getElement().getThemeList().add(Lumo.DARK);
+
         this.editForm = new EditForm(this);
         this.dialog = new Dialog();
 //        this.dialog.setWidth("50%");
@@ -61,10 +67,13 @@ public class MainView extends VerticalLayout {
         formLayout.getElement().getStyle()
                 .set("border", "1px solid grey")
                 .set("padding", "1em");
+
 //        formLayout.setMinHeight("30em");
 
         add(formLayout);
         expand(formLayout);
+//        formLayout.add(new FormDiv(component), 1);
+//        formLayout.add(new FormDiv(component), 3);
 //        add(initForm(initTextfield("XX", "t1"), initTextfield("YY", "t2"), initTextfield("ZZ", "t3"), initTextfield("AAA", "t4")));
     }
 
@@ -76,7 +85,13 @@ public class MainView extends VerticalLayout {
     }
 
     private void addElement() {
-//        formLayout.add(initTextfield("xx", "id1"));
+        this.editForm.clearField();;
+        this.dialog.add(this.editForm);
+        this.dialog.open();
+    }
+
+    public void showEdit(ElementFiled elementFiled) {
+        this.editForm.setField(elementFiled);
         this.dialog.add(this.editForm);
         this.dialog.open();
     }
@@ -102,9 +117,9 @@ public class MainView extends VerticalLayout {
 //        list.add(new FormLayout.ResponsiveStep("60em", 4));
 //        formLayout.setResponsiveSteps(list);
 //        formLayout.getElement().getThemeList().add("padding ");
-
-        formLayout.add(component, colspan);
-
+        if (Objects.nonNull(component)) {
+            formLayout.add(component, colspan);
+        }
 //        DatePicker datePicker = new DatePicker();
 //        datePicker.setLocale(Locale.CHINESE);
 //        datePicker.setClearButtonVisible(true);
